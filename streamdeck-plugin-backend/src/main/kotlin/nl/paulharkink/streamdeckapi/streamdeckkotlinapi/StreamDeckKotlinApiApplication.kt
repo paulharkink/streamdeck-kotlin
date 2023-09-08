@@ -1,5 +1,6 @@
 package nl.paulharkink.streamdeckapi.streamdeckkotlinapi
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.boot.CommandLineRunner
 import org.springframework.boot.ExitCodeGenerator
 import org.springframework.boot.autoconfigure.SpringBootApplication
@@ -18,8 +19,8 @@ import java.util.concurrent.CompletableFuture
 
 @SpringBootApplication
 class StreamDeckKotlinApiApplication(
-//    private val factory: CommandLine.IFactory,
-    private val connectCommand: ConnectToAPI
+    private val connectCommand: ConnectToAPI,
+    private val objectMapper: ObjectMapper
 ) : CommandLineRunner, ExitCodeGenerator {
 
     private var exitCode = 0
@@ -30,7 +31,7 @@ class StreamDeckKotlinApiApplication(
 
     @Component
     @Command(name = "connect", mixinStandardHelpOptions = true)
-    class ConnectToAPI : Runnable {
+    class ConnectToAPI(private val objectMapper: ObjectMapper) : Runnable {
         @Option(names = ["-port"], required = true)
         private var port: Int = 0
 
@@ -40,11 +41,22 @@ class StreamDeckKotlinApiApplication(
         @Option(names = ["-registerEvent"], required = true)
         private var event: String = ""
 
+        var info: Info? = null
+
         @Option(names = ["-info"], required = true)
-        private var info: String = ""
+        fun setInfo(infoJson: String) {
+            info = objectMapper.readValue(infoJson, Info::class.java)
+        }
 
         override fun run() {
-            println("Connecting to $port using $uuid, with event $event. Info json: $info")
+            println(
+                "Connecting to $port using $uuid, with event $event. Info json: ${
+                    if (info == null) "null" else
+                        objectMapper
+                            .writerWithDefaultPrettyPrinter()
+                            .writeValueAsString(info)
+                }"
+            )
             val wsClient = StandardWebSocketClient()
             val res: CompletableFuture<WebSocketSession> = wsClient.execute(object : WebSocketHandler {
                 override fun afterConnectionEstablished(session: WebSocketSession) {
@@ -69,7 +81,7 @@ class StreamDeckKotlinApiApplication(
                 }
             }, null, URI.create("ws://localhost:$port"))
 
-            val ses : WebSocketSession = res.get()
+            val ses: WebSocketSession = res.get()
 //            ses.sendMessage(WebSocketMessage())
             println("${res.get()}")
 
@@ -82,9 +94,55 @@ class StreamDeckKotlinApiApplication(
         println("You started me with ${args.toList()}")
 
         exitCode = CommandLine(connectCommand).execute(*args)
-//        exitCode = CommandLine(connectCommand, factory).execute(*args)
     }
 
+}
+
+data class Info(
+    val application: Application,
+    val plugin: Plugin,
+    val devicePixelRatio: Int
+)
+
+enum class Platform {
+    win, mac
+}
+
+data class Application(
+    val font: String,
+    val language: String,
+    val platform: Platform,
+    val platformVersion: String,
+    val version: String,
+    val colors: Colors,
+    val devices: List<Device>
+)
+
+data class Plugin(val uuid: String, val version: String)
+
+data class Colors(
+    val buttonPressedBackgroundColor: ColorCode,
+    val buttonPressedBorderColor: ColorCode,
+    val buttonPressedTextColor: ColorCode,
+    val disabledColor: ColorCode,
+    val highlightColor: ColorCode,
+    val mouseDownColor: ColorCode
+)
+
+data class Device(
+    val id: String,
+    val name: String,
+    val size: DeviceDimensions,
+    val type: Int
+)
+
+data class DeviceDimensions(val columns: Int, val rows: Int)
+
+@JvmInline
+value class ColorCode(private val code: String) {
+    init {
+        require("^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$".toRegex().matches(code)) { "Invalid color code" }
+    }
 }
 
 

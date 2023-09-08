@@ -40,13 +40,16 @@ dependencies {
 }
 tasks {
 	val copyJar by registering(Copy::class) {
-		dependsOn("bootJar")  // Make sure the jar is built before copying
+		dependsOn("bootJar", "jar")  // Make sure the jar is built before copying
 
 		from("$buildDir/libs") {
 			include("*.jar")
+			exclude("*-plain.jar")
 		}
 		into("../streamdeck-plugin/backend")
 		rename {"app.jar"}
+
+		duplicatesStrategy = DuplicatesStrategy.INCLUDE
 	}
 
     named("bootJar") {
