@@ -7,7 +7,7 @@ plugins {
 	kotlin("plugin.spring") version "1.8.22"
 }
 
-group = "nl.paulharkink.streamdeckapi"
+group = "nl.paulharkink.streamdeck.api"
 version = "0.0.1-SNAPSHOT"
 
 java {
