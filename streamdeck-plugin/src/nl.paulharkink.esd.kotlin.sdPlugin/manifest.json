@@ -1,10 +1,10 @@
 {
 	"SDKVersion": 2,
 	"Author": "Paul Harkink",
-	"CodePathMac": "backend/app.sh",
-	"CodePathWin": "backend/app.bat",
+	"CodePathMac": "app.sh",
+	"CodePathWin": "app.bat",
 	"Description": "Example description",
-	"Name": "Stream Deck Template",
+	"Name": "[TEST] Stream Deck Template",
 	"Icon": "actions/template/assets/action",
 	"URL": "https://www.elgato.com/en/gaming/stream-deck",
 	"Version": "1.0.2",
@@ -21,7 +21,7 @@
 			"MinimumVersion": "10"
 		}
 	],
-	"Category": "Template Plugin",
+	"Category": "Test",
 	"CategoryIcon": "actions/template/assets/actionimage",
 	"Actions": [
 		{

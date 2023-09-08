@@ -1,0 +1,17 @@
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+ :: Spring Boot ::                (v3.1.3)
+
+2023-09-08T13:56:01.298+02:00  INFO 93445 --- [           main] n.p.s.s.StreamDeckKotlinApiApplicationKt : Starting StreamDeckKotlinApiApplicationKt v0.0.1-SNAPSHOT using Java 17.0.2 with PID 93445 (/Users/pharkink/sources/homeautomation/streamdeck/kotlin-plugin/streamdeck-plugin/backend/app.jar started by pharkink in /Users/pharkink/sources/homeautomation/streamdeck/kotlin-plugin/streamdeck-plugin/src/nl.paulharkink.esd.kotlin.sdPlugin)
+2023-09-08T13:56:01.299+02:00  INFO 93445 --- [           main] n.p.s.s.StreamDeckKotlinApiApplicationKt : No active profile set, falling back to 1 default profile: "default"
+2023-09-08T13:56:01.808+02:00  INFO 93445 --- [           main] n.p.s.s.StreamDeckKotlinApiApplicationKt : Started StreamDeckKotlinApiApplicationKt in 0.764 seconds (process running for 1.052)
+You started me with [-port, 28196, -pluginUUID, 214C72BE89345D89A843149A63DEE16C, -registerEvent, registerPlugin, -info, {"application":{"font":".AppleSystemUIFont","language":"en","platform":"mac","platformVersion":"13.5.1","version":"6.3.0.18948"},"colors":{"buttonPressedBackgroundColor":"#303030FF","buttonPressedBorderColor":"#646464FF","buttonPressedTextColor":"#969696FF","disabledColor":"#007AFF7F","highlightColor":"#007AFFFF","mouseDownColor":"#2EA8FFFF"},"devicePixelRatio":1,"devices":[{"id":"10458C7F2BAC0281A90818DBD247F874","name":"Stream Deck","size":{"columns":5,"rows":3},"type":0}],"plugin":{"uuid":"nl.paulharkink.esd.kotlin","version":"1.0.2"}}]
+Connecting to 28196 using 214C72BE89345D89A843149A63DEE16C, with event registerPlugin. Info json: {"application":{"font":".AppleSystemUIFont","language":"en","platform":"mac","platformVersion":"13.5.1","version":"6.3.0.18948"},"colors":{"buttonPressedBackgroundColor":"#303030FF","buttonPressedBorderColor":"#646464FF","buttonPressedTextColor":"#969696FF","disabledColor":"#007AFF7F","highlightColor":"#007AFFFF","mouseDownColor":"#2EA8FFFF"},"devicePixelRatio":1,"devices":[{"id":"10458C7F2BAC0281A90818DBD247F874","name":"Stream Deck","size":{"columns":5,"rows":3},"type":0}],"plugin":{"uuid":"nl.paulharkink.esd.kotlin","version":"1.0.2"}}
+supportsPartialMessages()
+afterConnectionEstablished(session = StandardWebSocketSession[id=60bfc9a4-509a-570c-0a5a-f5d1dcbb392a, uri=null])
+StandardWebSocketSession[id=60bfc9a4-509a-570c-0a5a-f5d1dcbb392a, uri=null]

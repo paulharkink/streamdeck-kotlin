@@ -1,2 +1,2 @@
 #!/bin/bash
-java -jar app.jar "$@" >> logs/backend.log
+java -jar app.jar "$@" >> backend.log
