@@ -38,7 +38,21 @@ dependencies {
 //		exclude(group = "org.springframework.boot", module = "spring-boot-starter-tomcat")
 	}
 }
+tasks {
+	val copyJar by registering(Copy::class) {
+		dependsOn("bootJar")  // Make sure the jar is built before copying
 
+		from("$buildDir/libs") {
+			include("*.jar")
+		}
+		into("../streamdeck-plugin/backend")
+		rename {"app.jar"}
+	}
+
+    named("bootJar") {
+        finalizedBy(copyJar)
+    }
+}
 
 tasks.withType<KotlinCompile> {
 	kotlinOptions {

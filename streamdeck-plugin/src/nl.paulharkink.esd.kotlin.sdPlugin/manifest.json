@@ -1,7 +1,8 @@
 {
 	"SDKVersion": 2,
 	"Author": "Paul Harkink",
-	"CodePath": "app.sh",
+	"CodePathMac": "backend/app.sh",
+	"CodePathWin": "backend/app.bat",
 	"Description": "Example description",
 	"Name": "Stream Deck Template",
 	"Icon": "actions/template/assets/action",
