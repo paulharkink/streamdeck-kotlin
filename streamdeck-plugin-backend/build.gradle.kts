@@ -39,6 +39,11 @@ dependencies {
 	implementation("com.github.ProjectMapK:jackson-module-kogera:2.15.2-beta3")
 
 	implementation("org.springframework.boot:spring-boot-starter-websocket")
+
+	// KoTest
+	testImplementation("io.kotest:kotest-runner-junit5:5.6.2")
+	testImplementation("io.kotest.extensions:kotest-extensions-spring:1.1.3")
+	testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
 tasks {
 	val copyJar by registering(Copy::class) {
