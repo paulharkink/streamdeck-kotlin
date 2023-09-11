@@ -22,6 +22,7 @@ configurations {
 
 repositories {
 	mavenCentral()
+	maven { setUrl("https://jitpack.io") } // jackson-module-kogera
 }
 
 dependencies {
@@ -29,14 +30,15 @@ dependencies {
 	compileOnly("org.projectlombok:lombok")
 	developmentOnly("org.springframework.boot:spring-boot-devtools")
 	annotationProcessor("org.projectlombok:lombok")
-//	testImplementation("org.springframework.boot:spring-boot-starter-test")
+	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	implementation("info.picocli:picocli-spring-boot-starter:4.7.5")
 	implementation("org.springframework:spring-websocket")
 	implementation("jakarta.websocket:jakarta.websocket-client-api")
+//	implementation("com.fasterxml.jackson.module:jackson-module-kotlin") //:2.12.5
+	// jackson-module-kotlin can't handle value-classes, see: https://github.com/FasterXML/jackson-module-kotlin/issues/650
+	implementation("com.github.ProjectMapK:jackson-module-kogera:2.15.2-beta3")
 
-	implementation("org.springframework.boot:spring-boot-starter-websocket") {
-//		exclude(group = "org.springframework.boot", module = "spring-boot-starter-tomcat")
-	}
+	implementation("org.springframework.boot:spring-boot-starter-websocket")
 }
 tasks {
 	val copyJar by registering(Copy::class) {

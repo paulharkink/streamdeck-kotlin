@@ -1,5 +1,6 @@
 package nl.paulharkink.streamdeckapi.streamdeckkotlinapi
 
+import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.boot.CommandLineRunner
 import org.springframework.boot.ExitCodeGenerator
@@ -91,7 +92,7 @@ class StreamDeckKotlinApiApplication(
     }
 
     override fun run(vararg args: String) {
-        println("You started me with ${args.toList()}")
+        println("You started me with ${args.toList().joinToString(" ")}")
 
         exitCode = CommandLine(connectCommand).execute(*args)
     }
@@ -101,32 +102,36 @@ class StreamDeckKotlinApiApplication(
 data class Info(
     val application: Application,
     val plugin: Plugin,
-    val devicePixelRatio: Int
+    val devicePixelRatio: Int,
+    val colors: Colors,
+    val devices: List<Device>
 )
 
 enum class Platform {
-    win, mac
+    @JsonProperty("win")
+    WINDOWS,
+
+    @JsonProperty("mac")
+    MAC
 }
 
 data class Application(
-    val font: String,
-    val language: String,
+    val font: String?,
+    val language: String?,
     val platform: Platform,
     val platformVersion: String,
-    val version: String,
-    val colors: Colors,
-    val devices: List<Device>
+    val version: String
 )
 
 data class Plugin(val uuid: String, val version: String)
 
 data class Colors(
-    val buttonPressedBackgroundColor: ColorCode,
-    val buttonPressedBorderColor: ColorCode,
-    val buttonPressedTextColor: ColorCode,
-    val disabledColor: ColorCode,
-    val highlightColor: ColorCode,
-    val mouseDownColor: ColorCode
+    val buttonPressedBackgroundColor: ColorCode?,
+    val buttonPressedBorderColor: ColorCode?,
+    val buttonPressedTextColor: ColorCode?,
+    val disabledColor: ColorCode?,
+    val highlightColor: ColorCode?,
+    val mouseDownColor: ColorCode?
 )
 
 data class Device(
