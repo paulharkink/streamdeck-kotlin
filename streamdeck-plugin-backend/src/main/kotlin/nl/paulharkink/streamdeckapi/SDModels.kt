@@ -1,4 +1,4 @@
-package nl.paulharkink.streamdeckapi.streamdeckkotlinapi
+package nl.paulharkink.streamdeckapi
 
 import com.fasterxml.jackson.annotation.JsonProperty
 
@@ -52,5 +52,3 @@ value class ColorCode(private val code: String) {
         require("^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$".toRegex().matches(code)) { "Invalid color code" }
     }
 }
-
-data class RegisterEvent(val event: String, val uuid: String)

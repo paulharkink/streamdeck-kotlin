@@ -1,39 +1,34 @@
-package nl.paulharkink.streamdeckapi.streamdeckkotlinapi
+package nl.paulharkink.streamdeckapi.ws
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import nl.paulharkink.streamdeckapi.Info
+import nl.paulharkink.streamdeckapi.info
+import nl.paulharkink.streamdeckapi.prettify
+import nl.paulharkink.streamdeckapi.warn
 import org.springframework.stereotype.Service
 import org.springframework.web.socket.*
 import org.springframework.web.socket.client.standard.StandardWebSocketClient
 import java.net.URI
 import java.util.concurrent.CountDownLatch
+import java.util.concurrent.TimeUnit
+import kotlin.time.Duration
 
 @Service
-class SDConnectionFactory(
+class SDWebSocketConnectionFactory(
     private val objectMapper: ObjectMapper
 ) {
 
-    fun connect(connectionProperties: SDConnectionProperties): Connection {
-        val connection = Connection.connect(objectMapper, connectionProperties)
-
-        connection.waitToBeConnected()
-        connection.sendMessage(
-            RegisterEvent(
-                connectionProperties.event,
-                connectionProperties.uuid
-            )
-        )
-        return connection
-    }
+    fun connect(connectionProperties: SDConnectionProperties): SDWebSocketConnection =
+        SDWebSocketConnection.connect(objectMapper, connectionProperties)
 
     fun connectAndWait(connectionProperties: SDConnectionProperties) {
-        info("Connecting")
         val connection = connect(connectionProperties)
         connection.waitToBeDisconnected()
         warn("Disconnected")
     }
 }
 
-class Connection private constructor(
+class SDWebSocketConnection private constructor(
     private val objectMapper: ObjectMapper,
     private val lowLevelWebSocketHandler: LowLevelWebSocketHandler,
     private val ses: WebSocketSession
@@ -43,14 +38,26 @@ class Connection private constructor(
         fun connect(
             objectMapper: ObjectMapper,
             connectionProperties: SDConnectionProperties
-        ): Connection {
+        ): SDWebSocketConnection {
             val lowLevelWebSocketHandler = LowLevelWebSocketHandler(objectMapper)
-            val ses = StandardWebSocketClient()
-                .execute(lowLevelWebSocketHandler, null, URI.create("ws://localhost:${connectionProperties.port}"))
-                .get()
+            val ses: WebSocketSession = establishConnection(lowLevelWebSocketHandler, connectionProperties)
 
-            return Connection(objectMapper, lowLevelWebSocketHandler, ses)
+            val connection = SDWebSocketConnection(objectMapper, lowLevelWebSocketHandler, ses)
+            connection.sendMessage(
+                RegisterEvent(
+                    connectionProperties.event,
+                    connectionProperties.uuid
+                )
+            )
+            return connection
         }
+
+        private fun establishConnection(
+            lowLevelWebSocketHandler: LowLevelWebSocketHandler,
+            connectionProperties: SDConnectionProperties
+        ): WebSocketSession = StandardWebSocketClient()
+            .execute(lowLevelWebSocketHandler, null, URI.create("ws://localhost:${connectionProperties.port}"))
+            .get()
     }
 
     init {
@@ -58,38 +65,36 @@ class Connection private constructor(
     }
 
     fun <T : Any> sendMessage(msg: T) {
-        ses.sendMessage(
-            TextMessage(
-                objectMapper.writeValueAsString(msg)
-            )
-        )
+        val msgJson = objectMapper.writeValueAsString(msg)
+        info("Sending $msg")
+        ses.sendMessage(TextMessage(msgJson))
     }
 
-    fun waitToBeConnected() = lowLevelWebSocketHandler.waitToBeConnected()
-    fun waitToBeDisconnected() = lowLevelWebSocketHandler.waitToBeDisconnected()
+    fun close() = ses.close(CloseStatus.NORMAL)
+
+    fun waitToBeDisconnected(duration: Duration = Duration.INFINITE) = lowLevelWebSocketHandler.waitToBeDisconnected(duration)
 }
 
 // Hide the WebSocketHandler implementation from Connection
 private class LowLevelWebSocketHandler(private val objectMapper: ObjectMapper) : WebSocketHandler {
 
-    lateinit var connection: Connection
+    lateinit var connection: SDWebSocketConnection
 
-    val answered = CountDownLatch(1)
     val hungUp = CountDownLatch(1)
 
-    fun waitToBeConnected() = answered.await()
-    fun waitToBeDisconnected() = hungUp.await()
+    fun waitToBeDisconnected(duration: Duration = Duration.INFINITE) =
+        if (duration.isFinite())
+            hungUp.await(duration.inWholeMilliseconds, TimeUnit.MILLISECONDS)
+        else
+            hungUp.await()
 
     override fun afterConnectionEstablished(session: WebSocketSession) {
         info("afterConnectionEstablished(session = $session)")
-        answered.countDown()
     }
 
     override fun handleMessage(session: WebSocketSession, message: WebSocketMessage<*>) {
         val payloadString = (message as? TextMessage)?.payload?.let {
-            objectMapper.prettyPrintJson(
-                it
-            )
+            objectMapper.prettify(it)
         } ?: message
         info(
             "handleMessage(session = $session, message= $payloadString )"
@@ -111,24 +116,12 @@ private class LowLevelWebSocketHandler(private val objectMapper: ObjectMapper) :
     }
 }
 
-fun ObjectMapper.prettyPrintJson(json: String): String {
-    return try {
-        writerWithDefaultPrettyPrinter()
-            .writeValueAsString(
-                readTree(json)
-            )
-    } catch (e: Exception) {
-        warn("Invalid JSON: $json", e)
-        json
-    }
-}
-
 interface SDConnectionProperties {
-    var port: Int
+    val port: Int
 
-    var uuid: String
+    val uuid: String
 
-    var event: String
+    val event: String
 
-    var info: Info?
+    val info: Info
 }

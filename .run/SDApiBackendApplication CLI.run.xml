@@ -1,0 +1,11 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="SDApiBackendApplication CLI" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+    <option name="FRAME_DEACTIVATION_UPDATE_POLICY" value="UpdateClassesAndResources" />
+    <module name="StreamDeck_Kotlin_Plugin.StreamDeck_Plugin_Kotlin_Backend.main" />
+    <option name="PROGRAM_PARAMETERS" value="-port 28196 -pluginUUID B7C7653E89237BABF50B0E663018B4EB -registerEvent registerPlugin -info {\&quot;application\&quot;:{\&quot;font\&quot;:\&quot;.AppleSystemUIFont\&quot;,\&quot;language\&quot;:\&quot;en\&quot;,\&quot;platform\&quot;:\&quot;mac\&quot;,\&quot;platformVersion\&quot;:\&quot;13.5.1\&quot;,\&quot;version\&quot;:\&quot;6.3.0.18948\&quot;},\&quot;colors\&quot;:{\&quot;buttonPressedBackgroundColor\&quot;:\&quot;#303030FF\&quot;,\&quot;buttonPressedBorderColor\&quot;:\&quot;#646464FF\&quot;,\&quot;buttonPressedTextColor\&quot;:\&quot;#969696FF\&quot;,\&quot;disabledColor\&quot;:\&quot;#007AFF7F\&quot;,\&quot;highlightColor\&quot;:\&quot;#007AFFFF\&quot;,\&quot;mouseDownColor\&quot;:\&quot;#2EA8FFFF\&quot;},\&quot;devicePixelRatio\&quot;:1,\&quot;devices\&quot;:[{\&quot;id\&quot;:\&quot;10458C7F2BAC0281A90818DBD247F874\&quot;,\&quot;name\&quot;:\&quot;StreamDeck\&quot;,\&quot;size\&quot;:{\&quot;columns\&quot;:5,\&quot;rows\&quot;:3},\&quot;type\&quot;:0}],\&quot;plugin\&quot;:{\&quot;uuid\&quot;:\&quot;nl.paulharkink.esd.kotlin\&quot;,\&quot;version\&quot;:\&quot;1.0.2\&quot;}}" />
+    <option name="SPRING_BOOT_MAIN_CLASS" value="nl.paulharkink.streamdeckapi.SDApiBackendApplication" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

@@ -1,0 +1,42 @@
+#@name Connect
+POST http://{{host}}:{{port}}/connect
+Content-Type: application/json
+
+{
+  "port": "28196",
+  "pluginUUID": "74E3F202E0461D1B4704C95BEA2A9ECD",
+  "registerEvent": "registerPlugin",
+  "info": {
+    "application": {
+      "font": ".AppleSystemUIFont",
+      "language": "en",
+      "platform": "mac",
+      "platformVersion": "13.5.1",
+      "version": "6.3.0.18948"
+    },
+    "colors": {
+      "buttonPressedBackgroundColor": "#303030FF",
+      "buttonPressedBorderColor": "#646464FF",
+      "buttonPressedTextColor": "#969696FF",
+      "disabledColor": "#007AFF7F",
+      "highlightColor": "#007AFFFF",
+      "mouseDownColor": "#2EA8FFFF"
+    },
+    "devicePixelRatio": 1,
+    "devices": [
+      {
+        "id": "10458C7F2BAC0281A90818DBD247F874",
+        "name": "Stream Deck",
+        "size": {
+          "columns": 5,
+          "rows": 3
+        },
+        "type": 0
+      }
+    ],
+    "plugin": {
+      "uuid": "nl.paulharkink.esd.kotlin",
+      "version": "1.0.2"
+    }
+  }
+}

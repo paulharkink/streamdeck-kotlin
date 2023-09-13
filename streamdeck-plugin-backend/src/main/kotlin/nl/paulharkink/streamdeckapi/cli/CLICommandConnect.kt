@@ -1,19 +1,22 @@
-package nl.paulharkink.streamdeckapi.streamdeckkotlinapi.cli
+package nl.paulharkink.streamdeckapi.cli
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import nl.paulharkink.streamdeckapi.streamdeckkotlinapi.Info
-import nl.paulharkink.streamdeckapi.streamdeckkotlinapi.SDConnectionFactory
-import nl.paulharkink.streamdeckapi.streamdeckkotlinapi.SDConnectionProperties
-import nl.paulharkink.streamdeckapi.streamdeckkotlinapi.info
+import nl.paulharkink.streamdeckapi.Info
+import nl.paulharkink.streamdeckapi.info
+import nl.paulharkink.streamdeckapi.prettyWriteValueAsString
+import nl.paulharkink.streamdeckapi.ws.SDConnectionProperties
+import nl.paulharkink.streamdeckapi.ws.SDWebSocketConnectionFactory
+import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Component
 import picocli.CommandLine.Command
 import picocli.CommandLine.Option
 
+@Profile("!rest")
 @Component
 @Command(name = "connect", mixinStandardHelpOptions = true)
-class ConnectCLIOptions(
+class CLICommandConnect(
     private val objectMapper: ObjectMapper,
-    private val sdConnectionFactory: SDConnectionFactory
+    private val sdWebSocketConnectionFactory: SDWebSocketConnectionFactory
 ) : SDConnectionProperties, Runnable {
 
     @Option(names = ["-port"], required = true)
@@ -25,7 +28,7 @@ class ConnectCLIOptions(
     @Option(names = ["-registerEvent"], required = true)
     override var event: String = ""
 
-    override var info: Info? = null
+    override lateinit var info: Info
 
     @Option(names = ["-info"], required = true)
     fun setInfo(infoJson: String) {
@@ -34,15 +37,13 @@ class ConnectCLIOptions(
     }
 
 
-    override fun toString() : String = "ws://localhost:$port uuid=$uuid, event=$event. Info json=${
-        if (info == null) "null" else
-            objectMapper
-                .writerWithDefaultPrettyPrinter()
-                .writeValueAsString(info)
-    }"
+    override fun toString(): String =
+        "ws://localhost:$port uuid=$uuid, event=$event. Info json=${
+            objectMapper.prettyWriteValueAsString(info)
+        }"
 
     override fun run() {
-        sdConnectionFactory.connectAndWait(this)
+        sdWebSocketConnectionFactory.connectAndWait(this)
     }
 
 }

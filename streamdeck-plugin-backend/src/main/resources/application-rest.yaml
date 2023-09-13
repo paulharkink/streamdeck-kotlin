@@ -1,3 +1,6 @@
 spring:
   main:
     web-application-type: servlet
+  devtools:
+    livereload:
+      enabled: true
