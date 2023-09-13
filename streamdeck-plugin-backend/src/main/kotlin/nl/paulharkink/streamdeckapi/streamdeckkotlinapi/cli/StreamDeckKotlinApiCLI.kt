@@ -1,14 +1,16 @@
-package nl.paulharkink.streamdeckapi.streamdeckkotlinapi
+package nl.paulharkink.streamdeckapi.streamdeckkotlinapi.cli
 
-import nl.paulharkink.streamdeckapi.streamdeckkotlinapi.cli.ConnectCLIOptions
+import nl.paulharkink.streamdeckapi.streamdeckkotlinapi.info
+import nl.paulharkink.streamdeckapi.streamdeckkotlinapi.warn
 import org.springframework.boot.CommandLineRunner
 import org.springframework.boot.ExitCodeGenerator
-import org.springframework.boot.autoconfigure.SpringBootApplication
-import org.springframework.boot.runApplication
+import org.springframework.context.annotation.Profile
+import org.springframework.stereotype.Component
 import picocli.CommandLine
 
-@SpringBootApplication
-class StreamDeckKotlinApiApplication(
+@Profile("cli")
+@Component
+class StreamDeckKotlinApiCLI(
     private val connectCommand: ConnectCLIOptions
 ) : CommandLineRunner, ExitCodeGenerator {
 
@@ -24,8 +26,4 @@ class StreamDeckKotlinApiApplication(
         warn("Exiting with code $exitCode")
     }
 
-}
-
-fun main(args: Array<String>) {
-    runApplication<StreamDeckKotlinApiApplication>(*args)
 }

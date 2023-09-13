@@ -1,3 +1,5 @@
 spring:
+  profiles:
+    default: cli
   main:
     web-application-type: none

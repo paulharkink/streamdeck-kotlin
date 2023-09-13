@@ -23,6 +23,14 @@ inline fun <reified T> T.warn(msg: String) {
     logger().warn(msg)
 }
 
+inline fun <reified T> T.warn(msg: String, e: Throwable) {
+    logger().warn(msg, e)
+}
+
 inline fun <reified T> T.error(msg: String) {
     logger().error(msg)
+}
+
+inline fun <reified T> T.error(msg: String, e: Throwable) {
+    logger().error(msg, e)
 }
