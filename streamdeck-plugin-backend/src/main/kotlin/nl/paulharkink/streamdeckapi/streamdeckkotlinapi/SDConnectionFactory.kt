@@ -13,7 +13,8 @@ class SDConnectionFactory(
 ) {
 
     fun connect(connectionProperties: SDConnectionProperties): Connection {
-        val connection = Connection(objectMapper, connectionProperties)
+        val connection = Connection.connect(objectMapper, connectionProperties)
+
         connection.waitToBeConnected()
         connection.sendMessage(
             RegisterEvent(
@@ -21,7 +22,7 @@ class SDConnectionFactory(
                 connectionProperties.uuid
             )
         )
-        return connection;
+        return connection
     }
 
     fun connectAndWait(connectionProperties: SDConnectionProperties) {
@@ -32,19 +33,28 @@ class SDConnectionFactory(
     }
 }
 
-class Connection(
+class Connection private constructor(
     private val objectMapper: ObjectMapper,
-    connectionProperties: SDConnectionProperties
+    private val lowLevelWebSocketHandler: LowLevelWebSocketHandler,
+    private val ses: WebSocketSession
 ) {
 
-    private val wsHandler: WSHandler
-    private var ses: WebSocketSession
+    companion object {
+        fun connect(
+            objectMapper: ObjectMapper,
+            connectionProperties: SDConnectionProperties
+        ): Connection {
+            val lowLevelWebSocketHandler = LowLevelWebSocketHandler(objectMapper)
+            val ses = StandardWebSocketClient()
+                .execute(lowLevelWebSocketHandler, null, URI.create("ws://localhost:${connectionProperties.port}"))
+                .get()
+
+            return Connection(objectMapper, lowLevelWebSocketHandler, ses)
+        }
+    }
 
     init {
-        wsHandler = WSHandler()
-        ses = StandardWebSocketClient()
-            .execute(wsHandler, null, URI.create("ws://localhost:${connectionProperties.port}"))
-            .get()
+        lowLevelWebSocketHandler.connection = this
     }
 
     fun <T : Any> sendMessage(msg: T) {
@@ -55,47 +65,49 @@ class Connection(
         )
     }
 
-    fun waitToBeConnected() = wsHandler.waitToBeConnected()
-    fun waitToBeDisconnected() = wsHandler.waitToBeDisconnected()
+    fun waitToBeConnected() = lowLevelWebSocketHandler.waitToBeConnected()
+    fun waitToBeDisconnected() = lowLevelWebSocketHandler.waitToBeDisconnected()
+}
 
-    // Hide the WebSocketHandler implementation from Connection
-    private inner class WSHandler : WebSocketHandler {
+// Hide the WebSocketHandler implementation from Connection
+private class LowLevelWebSocketHandler(private val objectMapper: ObjectMapper) : WebSocketHandler {
 
-        val answered = CountDownLatch(1)
-        val hungUp = CountDownLatch(1)
+    lateinit var connection: Connection
 
-        fun waitToBeConnected() = answered.await()
-        fun waitToBeDisconnected() = hungUp.await()
+    val answered = CountDownLatch(1)
+    val hungUp = CountDownLatch(1)
 
-        override fun afterConnectionEstablished(session: WebSocketSession) {
-            info("afterConnectionEstablished(session = $session)")
-            answered.countDown()
-        }
+    fun waitToBeConnected() = answered.await()
+    fun waitToBeDisconnected() = hungUp.await()
 
-        override fun handleMessage(session: WebSocketSession, message: WebSocketMessage<*>) {
-            val payloadString = (message as? TextMessage)?.payload?.let {
-                objectMapper.prettyPrintJson(
-                    it
-                )
-            } ?: message
-            info(
-                "handleMessage(session = $session, message= $payloadString )"
+    override fun afterConnectionEstablished(session: WebSocketSession) {
+        info("afterConnectionEstablished(session = $session)")
+        answered.countDown()
+    }
+
+    override fun handleMessage(session: WebSocketSession, message: WebSocketMessage<*>) {
+        val payloadString = (message as? TextMessage)?.payload?.let {
+            objectMapper.prettyPrintJson(
+                it
             )
-        }
+        } ?: message
+        info(
+            "handleMessage(session = $session, message= $payloadString )"
+        )
+    }
 
-        override fun handleTransportError(session: WebSocketSession, exception: Throwable) {
-            info("handleTransportError(session = $session, exception= $exception)")
-        }
+    override fun handleTransportError(session: WebSocketSession, exception: Throwable) {
+        info("handleTransportError(session = $session, exception= $exception)")
+    }
 
-        override fun afterConnectionClosed(session: WebSocketSession, closeStatus: CloseStatus) {
-            info("afterConnectionClosed(session = $session, closeStatus= $closeStatus)")
-            hungUp.countDown()
-        }
+    override fun afterConnectionClosed(session: WebSocketSession, closeStatus: CloseStatus) {
+        info("afterConnectionClosed(session = $session, closeStatus= $closeStatus)")
+        hungUp.countDown()
+    }
 
-        override fun supportsPartialMessages(): Boolean {
-            info("supportsPartialMessages()")
-            return false
-        }
+    override fun supportsPartialMessages(): Boolean {
+        info("supportsPartialMessages()")
+        return false
     }
 }
 
