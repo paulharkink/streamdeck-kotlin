@@ -1,10 +1,10 @@
 package nl.paulharkink.streamdeckapi
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.paramnames.ParameterNamesModule
 import io.github.projectmapk.jackson.module.kogera.KotlinModule
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
+import nl.paulharkink.streamdeckapi.ws.DeviceDidConnect
 import nl.paulharkink.streamdeckapi.ws.KeyUp
 import nl.paulharkink.streamdeckapi.ws.ReceivedEvent
 import nl.paulharkink.streamdeckapi.ws.SystemDidWakeUp
@@ -15,7 +15,30 @@ class ReceivedEventsTest : FunSpec() {
     companion object {
         private val objectMapper: ObjectMapper = ObjectMapper()
             .registerModule(KotlinModule.Builder().build())
-            .registerModule(ParameterNamesModule())
+//            .registerModule(ParameterNamesModule())
+
+        val deviceDidConnectJson = """
+            {
+              "device" : "10458C7F2BAC0281A90818DBD247F874",
+              "deviceInfo" : {
+                "name" : "Stream Deck",
+                "size" : {
+                  "columns" : 5,
+                  "rows" : 3
+                },
+                "type" : 0
+              },
+              "event" : "deviceDidConnect"
+            }
+        """.trimIndent()
+        val deviceDidConnect = DeviceDidConnect(
+            device = DeviceId("10458C7F2BAC0281A90818DBD247F874"),
+            deviceInfo = DeviceInfo(
+                name = "Stream Deck",
+                size = DeviceDimensions(columns = 5, rows = 3),
+                type = DeviceType.StreamDeck
+            )
+        )
 
         val keyUpJson = """
         {
@@ -65,6 +88,12 @@ class ReceivedEventsTest : FunSpec() {
     }
 
     init {
+
+        test("should parse deviceDidConnect") {
+            val res = objectMapper.readValue(deviceDidConnectJson, DeviceDidConnect::class.java)
+            res shouldBe deviceDidConnect
+        }
+
         test("should parse KeyUp") {
             val res = objectMapper.readValue(keyUpJson, KeyUp::class.java)
             res shouldBe keyUp

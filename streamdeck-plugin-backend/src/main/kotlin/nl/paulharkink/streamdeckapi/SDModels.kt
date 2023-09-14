@@ -42,7 +42,7 @@ data class Colors(
 )
 
 data class DeviceInfo(
-    val id: String,
+    val id: DeviceId? = null,
     val name: String,
     val size: DeviceDimensions,
     val type: DeviceType

@@ -217,7 +217,8 @@ data class WillAppear(
         val settings: AnyJson,
         val coordinates: Coordinates,
         val state: Int? = null,
-        val isInMultiAction: Boolean
+        val isInMultiAction: Boolean,
+        val controller: String? = null
     )
 }
 

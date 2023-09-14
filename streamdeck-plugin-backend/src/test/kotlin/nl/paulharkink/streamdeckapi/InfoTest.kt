@@ -64,7 +64,7 @@ class InfoTest : FunSpec() {
         """.trimIndent()
 
         val deviceOne = DeviceInfo(
-            id = "10458C7F2BAC0281A90818DBD247F874",
+            id = DeviceId("10458C7F2BAC0281A90818DBD247F874"),
             name = "Stream Deck",
             size = DeviceDimensions(5, 3),
             type = DeviceType.StreamDeck

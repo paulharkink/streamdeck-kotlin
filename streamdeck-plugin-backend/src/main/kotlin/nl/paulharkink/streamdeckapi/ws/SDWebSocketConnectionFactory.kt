@@ -1,6 +1,8 @@
 package nl.paulharkink.streamdeckapi.ws
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.paramnames.ParameterNamesModule
+import io.github.projectmapk.jackson.module.kogera.KotlinModule
 import nl.paulharkink.streamdeckapi.Info
 import nl.paulharkink.streamdeckapi.info
 import nl.paulharkink.streamdeckapi.prettify
@@ -76,7 +78,11 @@ class SDWebSocketConnection private constructor(
 }
 
 // Hide the WebSocketHandler implementation from Connection
-private class LowLevelWebSocketHandler(private val objectMapper: ObjectMapper) : WebSocketHandler {
+private class LowLevelWebSocketHandler(objectMapper: ObjectMapper) : WebSocketHandler {
+
+    private val objectMapper = ObjectMapper()
+        .registerModule(KotlinModule.Builder().build())
+        .registerModule(ParameterNamesModule())
 
     lateinit var connection: SDWebSocketConnection
 
