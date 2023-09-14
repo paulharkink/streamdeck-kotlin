@@ -93,12 +93,19 @@ private class LowLevelWebSocketHandler(private val objectMapper: ObjectMapper) :
     }
 
     override fun handleMessage(session: WebSocketSession, message: WebSocketMessage<*>) {
-        val payloadString = (message as? TextMessage)?.payload?.let {
-            objectMapper.prettify(it)
-        } ?: message
-        info(
-            "handleMessage(session = $session, message= $payloadString )"
-        )
+        (message as? TextMessage)?.let { textMessage:TextMessage ->
+            try {
+                val receivedEvent = objectMapper.readValue(textMessage.payload, ReceivedEvent::class.java)
+                info(
+                    "handleMessage(session = $session, message= $receivedEvent )"
+                )
+            } catch (e : Exception) {
+                warn("Could not parse as ReceivedMessage: ${objectMapper.prettify(textMessage.payload)}", e)
+            }
+
+        } ?: run {
+            warn("Received message that was not a TextMessage: $message")
+        }
     }
 
     override fun handleTransportError(session: WebSocketSession, exception: Throwable) {

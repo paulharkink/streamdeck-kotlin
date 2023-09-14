@@ -63,11 +63,11 @@ class InfoTest : FunSpec() {
         }
         """.trimIndent()
 
-        val deviceOne = Device(
+        val deviceOne = DeviceInfo(
             id = "10458C7F2BAC0281A90818DBD247F874",
             name = "Stream Deck",
             size = DeviceDimensions(5, 3),
-            type = 0
+            type = DeviceType.StreamDeck
         )
 
         val pluginJson = """
@@ -120,7 +120,7 @@ class InfoTest : FunSpec() {
         }
 
         test("should parse Device") {
-            val res = objectMapper.readValue(deviceOneJson, Device::class.java)
+            val res = objectMapper.readValue(deviceOneJson, DeviceInfo::class.java)
             res shouldBe deviceOne
         }
 
